@@ -10,7 +10,7 @@ class Block {
 
         this.name = name
         this.pos = createVector(x, y)
-        this.prePos = this.pos.copy()
+        this.prePos = null
         this.size = createVector(w, h)
         this.color = color
         this.mouseOffset = null
@@ -86,22 +86,35 @@ class Block {
         }
     }
 
+    update() {
+        if (this.size.x === 1 && this.size.y === 1) {
+            if (abs(this.pos.x - round(this.pos.x)) < this.DETECTION_LENGTH
+                && abs(this.pos.y - round(this.pos.y)) < this.DETECTION_LENGTH
+                || abs(this.pos.x - this.prePos.x) >= this.DETECTION_LENGTH
+                || abs(this.pos.y - this.prePos.y) >= this.DETECTION_LENGTH) {
+                this.getPossibleMoves()
+                this.prePos = this.pos.copy()
+            }
+        } else {
+            if (!this.prePos || abs(this.pos.x - this.prePos.x) >= 1 || abs(this.pos.y - this.prePos.y) >= 1) {
+                this.getPossibleMoves()
+                this.prePos = this.pos.copy()
+            }
+        }
+    }
+
     mousePressed() {
+        this.prePos = null
         this.mouseOffset = p5.Vector.sub(createVector(mouseX / game.SCALE, mouseY / game.SCALE), this.pos)
         this.setGrid(false)
     }
 
     mouseDragged() {
-        if (abs(this.pos.x - this.prePos.x) >= this.DETECTION_LENGTH
-            || abs(this.pos.y - this.prePos.y) >= this.DETECTION_LENGTH
-            || (abs(this.pos.x - round(this.pos.x)) < this.DETECTION_LENGTH
-                && abs(this.pos.y - round(this.pos.y)) < this.DETECTION_LENGTH)) {
-            this.getPossibleMoves()
-            this.prePos = this.pos.copy()
-        }
+        this.update()
         this.pos.x = constrain(mouseX / game.SCALE - this.mouseOffset.x,
             this.possibleMoves[this.LEFT],
             this.possibleMoves[this.RIGHT])
+        this.update()
         this.pos.y = constrain(mouseY / game.SCALE - this.mouseOffset.y,
             this.possibleMoves[this.UP],
             this.possibleMoves[this.DOWN])
