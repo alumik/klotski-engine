@@ -6,9 +6,11 @@ class Block {
         this.DOWN = 3
         this.HORIZONTAL = true
         this.VERTICAL = false
+        this.DETECTION_LENGTH = 0.2
 
         this.name = name
         this.pos = createVector(x, y)
+        this.prePos = this.pos.copy()
         this.size = createVector(w, h)
         this.color = color
         this.mouseOffset = null
@@ -90,7 +92,13 @@ class Block {
     }
 
     mouseDragged() {
-        this.getPossibleMoves()
+        if (abs(this.pos.x - this.prePos.x) >= this.DETECTION_LENGTH
+            || abs(this.pos.y - this.prePos.y) >= this.DETECTION_LENGTH
+            || (abs(this.pos.x - round(this.pos.x)) < this.DETECTION_LENGTH
+                && abs(this.pos.y - round(this.pos.y)) < this.DETECTION_LENGTH)) {
+            this.getPossibleMoves()
+            this.prePos = this.pos.copy()
+        }
         this.pos.x = constrain(mouseX / game.SCALE - this.mouseOffset.x,
             this.possibleMoves[this.LEFT],
             this.possibleMoves[this.RIGHT])
