@@ -49,10 +49,11 @@ class Block {
     }
 
     getMovePos(start, size, loopDir, orientation, index, dir, offset) {
-        for (let i = start; i >= 0 && i < size; i += loopDir) {
-            if ((orientation ? game.grid[i][index] : game.grid[index][i]) === false) {
-                if (loopDir > 0 ? (i + offset > this.possibleMoves[dir]) : (i + offset <= this.possibleMoves[dir])) {
-                    this.possibleMoves[dir] = i + offset
+        for (let i = start; i >= -1 && i <= size; i += loopDir) {
+            if (i < 0 || i >= size || (orientation ? game.grid[i][index] : game.grid[index][i]) === true) {
+                const value = i + offset - loopDir
+                if (loopDir < 0 ? (value > this.possibleMoves[dir]) : (value <= this.possibleMoves[dir])) {
+                    this.possibleMoves[dir] = value
                 }
                 return
             }
@@ -67,14 +68,14 @@ class Block {
                 const y_floor = floor(this.pos.y + y)
                 const x_ceil = ceil(this.pos.x + x)
                 const x_floor = floor(this.pos.x + x)
-                this.getMovePos(0, game.GAME_W, 1, true, y_ceil, this.LEFT, 0)
-                this.getMovePos(0, game.GAME_W, 1, true, y_floor, this.LEFT, 0)
-                this.getMovePos(game.GAME_W - 1, game.GAME_W, -1, true, y_ceil, this.RIGHT, 1 - this.size.x)
-                this.getMovePos(game.GAME_W - 1, game.GAME_W, -1, true, y_floor, this.RIGHT, 1 - this.size.x)
-                this.getMovePos(0, game.GAME_H, 1, false, x_ceil, this.UP, 0)
-                this.getMovePos(0, game.GAME_H, 1, false, x_floor, this.UP, 0)
-                this.getMovePos(game.GAME_H - 1, game.GAME_H, -1, false, x_ceil, this.DOWN, 1 - this.size.y)
-                this.getMovePos(game.GAME_H - 1, game.GAME_H, -1, false, x_floor, this.DOWN, 1 - this.size.y)
+                this.getMovePos(round(this.pos.x + x), game.GAME_W, -1, true, y_ceil, this.LEFT, 0)
+                this.getMovePos(round(this.pos.x + x), game.GAME_W, -1, true, y_floor, this.LEFT, 0)
+                this.getMovePos(round(this.pos.x + x), game.GAME_W, 1, true, y_ceil, this.RIGHT, 1 - this.size.x)
+                this.getMovePos(round(this.pos.x + x), game.GAME_W, 1, true, y_floor, this.RIGHT, 1 - this.size.x)
+                this.getMovePos(round(this.pos.y + y), game.GAME_H, -1, false, x_ceil, this.UP, 0)
+                this.getMovePos(round(this.pos.y + y), game.GAME_H, -1, false, x_floor, this.UP, 0)
+                this.getMovePos(round(this.pos.y + y), game.GAME_H, 1, false, x_ceil, this.DOWN, 1 - this.size.y)
+                this.getMovePos(round(this.pos.y + y), game.GAME_H, 1, false, x_floor, this.DOWN, 1 - this.size.y)
             }
         }
     }
