@@ -12,11 +12,7 @@ class Block {
         this.mouseOffset = null
         this.possibleMoves = null
 
-        for (let i = 0; i < this.size.x; i++) {
-            for (let j = 0; j < this.size.y; j++) {
-                game.grid[x + i][y + j] = true
-            }
-        }
+        this.setGrid(true)
     }
 
     contains(x, y) {
@@ -30,11 +26,26 @@ class Block {
         stroke(51)
         strokeWeight(3)
         fill(this.color)
-        rect(this.pos.x * game.SCALE, this.pos.y * game.SCALE, this.size.x * game.SCALE, this.size.y * game.SCALE)
+        rect(this.pos.x * game.SCALE,
+            this.pos.y * game.SCALE,
+            this.size.x * game.SCALE,
+            this.size.y * game.SCALE)
         fill(51)
         textSize(50)
         textAlign(CENTER, CENTER)
-        text(this.name, this.pos.x * game.SCALE + 8, this.pos.y * game.SCALE, this.size.x * game.SCALE, this.size.y * game.SCALE)
+        text(this.name,
+            this.pos.x * game.SCALE + 8,
+            this.pos.y * game.SCALE,
+            this.size.x * game.SCALE,
+            this.size.y * game.SCALE)
+    }
+
+    setGrid(state) {
+        for (let i = 0; i < this.size.x; i++) {
+            for (let j = 0; j < this.size.y; j++) {
+                game.grid[this.pos.x + i][this.pos.y + j] = state
+            }
+        }
     }
 
     getMovePos(start, size, loopDir, orientation, index, dir, offset) {
@@ -70,26 +81,22 @@ class Block {
 
     mousePressed() {
         this.mouseOffset = p5.Vector.sub(createVector(mouseX / game.SCALE, mouseY / game.SCALE), this.pos)
-        for (let i = 0; i < this.size.x; i++) {
-            for (let j = 0; j < this.size.y; j++) {
-                game.grid[this.pos.x + i][this.pos.y + j] = false
-            }
-        }
+        this.setGrid(false)
     }
 
     mouseDragged() {
         this.getPossibleMoves()
-        this.pos.x = constrain(mouseX / game.SCALE - this.mouseOffset.x, this.possibleMoves[this.LEFT], this.possibleMoves[this.RIGHT])
-        this.pos.y = constrain(mouseY / game.SCALE - this.mouseOffset.y, this.possibleMoves[this.UP], this.possibleMoves[this.DOWN])
+        this.pos.x = constrain(mouseX / game.SCALE - this.mouseOffset.x,
+            this.possibleMoves[this.LEFT],
+            this.possibleMoves[this.RIGHT])
+        this.pos.y = constrain(mouseY / game.SCALE - this.mouseOffset.y,
+            this.possibleMoves[this.UP],
+            this.possibleMoves[this.DOWN])
     }
 
     mouseReleased() {
         this.pos.x = round(this.pos.x)
         this.pos.y = round(this.pos.y)
-        for (let i = 0; i < this.size.x; i++) {
-            for (let j = 0; j < this.size.y; j++) {
-                game.grid[this.pos.x + i][this.pos.y + j] = true
-            }
-        }
+        this.setGrid(true)
     }
 }
