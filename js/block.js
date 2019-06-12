@@ -4,6 +4,8 @@ class Block {
         this.RIGHT = 1
         this.UP = 2
         this.DOWN = 3
+        this.HORIZONTAL = true
+        this.VERTICAL = false
 
         this.name = name
         this.pos = createVector(x, y)
@@ -64,18 +66,20 @@ class Block {
         this.possibleMoves = [0, Infinity, 0, Infinity]
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
-                const y_ceil = ceil(this.pos.y + y)
-                const y_floor = floor(this.pos.y + y)
-                const x_ceil = ceil(this.pos.x + x)
-                const x_floor = floor(this.pos.x + x)
-                this.getMovePos(round(this.pos.x + x), game.GAME_W, -1, true, y_ceil, this.LEFT, 0)
-                this.getMovePos(round(this.pos.x + x), game.GAME_W, -1, true, y_floor, this.LEFT, 0)
-                this.getMovePos(round(this.pos.x + x), game.GAME_W, 1, true, y_ceil, this.RIGHT, 1 - this.size.x)
-                this.getMovePos(round(this.pos.x + x), game.GAME_W, 1, true, y_floor, this.RIGHT, 1 - this.size.x)
-                this.getMovePos(round(this.pos.y + y), game.GAME_H, -1, false, x_ceil, this.UP, 0)
-                this.getMovePos(round(this.pos.y + y), game.GAME_H, -1, false, x_floor, this.UP, 0)
-                this.getMovePos(round(this.pos.y + y), game.GAME_H, 1, false, x_ceil, this.DOWN, 1 - this.size.y)
-                this.getMovePos(round(this.pos.y + y), game.GAME_H, 1, false, x_floor, this.DOWN, 1 - this.size.y)
+                const xCeil = ceil(this.pos.x + x)
+                const xFloor = floor(this.pos.x + x)
+                const xRound = round(this.pos.x + x)
+                const yCeil = ceil(this.pos.y + y)
+                const yFloor = floor(this.pos.y + y)
+                const yRound = round(this.pos.y + y)
+                this.getMovePos(xRound, game.GAME_W, -1, this.HORIZONTAL, yCeil, this.LEFT, 0)
+                this.getMovePos(xRound, game.GAME_W, -1, this.HORIZONTAL, yFloor, this.LEFT, 0)
+                this.getMovePos(xRound, game.GAME_W, 1, this.HORIZONTAL, yCeil, this.RIGHT, 1 - this.size.x)
+                this.getMovePos(xRound, game.GAME_W, 1, this.HORIZONTAL, yFloor, this.RIGHT, 1 - this.size.x)
+                this.getMovePos(yRound, game.GAME_H, -1, this.VERTICAL, xCeil, this.UP, 0)
+                this.getMovePos(yRound, game.GAME_H, -1, this.VERTICAL, xFloor, this.UP, 0)
+                this.getMovePos(yRound, game.GAME_H, 1, this.VERTICAL, xCeil, this.DOWN, 1 - this.size.y)
+                this.getMovePos(yRound, game.GAME_H, 1, this.VERTICAL, xFloor, this.DOWN, 1 - this.size.y)
             }
         }
     }
