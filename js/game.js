@@ -4,7 +4,7 @@ class Game {
         this.GAME_W = 4
         this.GAME_H = 5
 
-        this.blocks = []
+        this.blocks = null
         this.grid = []
         this._block = null
     }
@@ -25,16 +25,18 @@ class Game {
     }
 
     initBlocks() {
-        this.blocks.push(new Block(1, 0, 2, 2, true))
-        this.blocks.push(new Block(0, 0, 1, 2))
-        this.blocks.push(new Block(3, 0, 1, 2))
-        this.blocks.push(new Block(0, 2, 1, 2))
-        this.blocks.push(new Block(1, 2, 2, 1))
-        this.blocks.push(new Block(3, 2, 1, 2))
-        this.blocks.push(new Block(1, 3, 1, 1))
-        this.blocks.push(new Block(2, 3, 1, 1))
-        this.blocks.push(new Block(0, 4, 1, 1))
-        this.blocks.push(new Block(3, 4, 1, 1))
+        this.blocks = [
+            new Block(1, 0, 2, 2, true),
+            new Block(0, 0, 1, 2),
+            new Block(3, 0, 1, 2),
+            new Block(0, 2, 1, 2),
+            new Block(1, 2, 2, 1),
+            new Block(3, 2, 1, 2),
+            new Block(1, 3, 1, 1),
+            new Block(2, 3, 1, 1),
+            new Block(0, 4, 1, 1),
+            new Block(3, 4, 1, 1)
+        ]
     }
 
     mousePressed() {
