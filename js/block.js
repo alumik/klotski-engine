@@ -6,15 +6,14 @@ class Block {
         this.DOWN = 3
         this.HORIZONTAL = true
         this.VERTICAL = false
-        this.DETECTION_LENGTH = 0.2
 
         this.name = name
         this.pos = createVector(x, y)
-        this.prePos = null
         this.size = createVector(w, h)
         this.color = color
         this.mouseOffset = null
-        this.possibleMoves = null
+        this.moveLimits = null
+        this.detectionFlag = null
 
         this.setGrid(true)
     }
@@ -52,20 +51,20 @@ class Block {
         }
     }
 
-    getMovePos(start, size, loopDir, orientation, index, dir, offset) {
+    getMoveLimit(start, size, loopDir, orientation, index, dir, offset) {
         for (let i = start; i >= -1 && i <= size; i += loopDir) {
-            if (i < 0 || i >= size || (orientation ? game.grid[i][index] : game.grid[index][i]) === true) {
-                const value = i + offset - loopDir
-                if (loopDir < 0 ? (value > this.possibleMoves[dir]) : (value <= this.possibleMoves[dir])) {
-                    this.possibleMoves[dir] = value
+            if (i < 0 || i >= size || (orientation ? game.grid[i][index] : game.grid[index][i])) {
+                const move = i + offset - loopDir
+                if (loopDir > 0 === move < this.moveLimits[dir]) {
+                    this.moveLimits[dir] = move
                 }
                 return
             }
         }
     }
 
-    getPossibleMoves() {
-        this.possibleMoves = [0, Infinity, 0, Infinity]
+    getMoveLimits() {
+        this.moveLimits = [0, Infinity, 0, Infinity]
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
                 const xCeil = ceil(this.pos.x + x)
@@ -74,37 +73,34 @@ class Block {
                 const yCeil = ceil(this.pos.y + y)
                 const yFloor = floor(this.pos.y + y)
                 const yRound = round(this.pos.y + y)
-                this.getMovePos(xRound, game.GAME_W, -1, this.HORIZONTAL, yCeil, this.LEFT, 0)
-                this.getMovePos(xRound, game.GAME_W, -1, this.HORIZONTAL, yFloor, this.LEFT, 0)
-                this.getMovePos(xRound, game.GAME_W, 1, this.HORIZONTAL, yCeil, this.RIGHT, 1 - this.size.x)
-                this.getMovePos(xRound, game.GAME_W, 1, this.HORIZONTAL, yFloor, this.RIGHT, 1 - this.size.x)
-                this.getMovePos(yRound, game.GAME_H, -1, this.VERTICAL, xCeil, this.UP, 0)
-                this.getMovePos(yRound, game.GAME_H, -1, this.VERTICAL, xFloor, this.UP, 0)
-                this.getMovePos(yRound, game.GAME_H, 1, this.VERTICAL, xCeil, this.DOWN, 1 - this.size.y)
-                this.getMovePos(yRound, game.GAME_H, 1, this.VERTICAL, xFloor, this.DOWN, 1 - this.size.y)
+                this.getMoveLimit(xRound, game.GAME_W, -1, this.HORIZONTAL, yCeil, this.LEFT, 0)
+                this.getMoveLimit(xRound, game.GAME_W, -1, this.HORIZONTAL, yFloor, this.LEFT, 0)
+                this.getMoveLimit(xRound, game.GAME_W, 1, this.HORIZONTAL, yCeil, this.RIGHT, 1 - this.size.x)
+                this.getMoveLimit(xRound, game.GAME_W, 1, this.HORIZONTAL, yFloor, this.RIGHT, 1 - this.size.x)
+                this.getMoveLimit(yRound, game.GAME_H, -1, this.VERTICAL, xCeil, this.UP, 0)
+                this.getMoveLimit(yRound, game.GAME_H, -1, this.VERTICAL, xFloor, this.UP, 0)
+                this.getMoveLimit(yRound, game.GAME_H, 1, this.VERTICAL, xCeil, this.DOWN, 1 - this.size.y)
+                this.getMoveLimit(yRound, game.GAME_H, 1, this.VERTICAL, xFloor, this.DOWN, 1 - this.size.y)
             }
         }
     }
 
     update() {
         if (this.size.x === 1 && this.size.y === 1) {
-            if (abs(this.pos.x - round(this.pos.x)) < this.DETECTION_LENGTH
-                && abs(this.pos.y - round(this.pos.y)) < this.DETECTION_LENGTH
-                || abs(this.pos.x - this.prePos.x) >= this.DETECTION_LENGTH
-                || abs(this.pos.y - this.prePos.y) >= this.DETECTION_LENGTH) {
-                this.getPossibleMoves()
-                this.prePos = this.pos.copy()
+            if (this.detectionFlag) {
+                this.getMoveLimits()
             }
+            this.detectionFlag = abs(this.pos.x - round(this.pos.x)) + abs(this.pos.y - round(this.pos.y)) === 0
         } else {
-            if (!this.prePos || abs(this.pos.x - this.prePos.x) >= 1 || abs(this.pos.y - this.prePos.y) >= 1) {
-                this.getPossibleMoves()
-                this.prePos = this.pos.copy()
+            if (this.detectionFlag) {
+                this.getMoveLimits()
+                this.detectionFlag = false
             }
         }
     }
 
     mousePressed() {
-        this.prePos = null
+        this.detectionFlag = true
         this.mouseOffset = p5.Vector.sub(createVector(mouseX / game.SCALE, mouseY / game.SCALE), this.pos)
         this.setGrid(false)
     }
@@ -112,12 +108,12 @@ class Block {
     mouseDragged() {
         this.update()
         this.pos.x = constrain(mouseX / game.SCALE - this.mouseOffset.x,
-            this.possibleMoves[this.LEFT],
-            this.possibleMoves[this.RIGHT])
+            this.moveLimits[this.LEFT],
+            this.moveLimits[this.RIGHT])
         this.update()
         this.pos.y = constrain(mouseY / game.SCALE - this.mouseOffset.y,
-            this.possibleMoves[this.UP],
-            this.possibleMoves[this.DOWN])
+            this.moveLimits[this.UP],
+            this.moveLimits[this.DOWN])
     }
 
     mouseReleased() {
