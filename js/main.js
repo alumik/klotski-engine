@@ -8,7 +8,7 @@ function setup() {
 }
 
 function draw() {
-    background(200)
+    background(38, 191, 191)
     game.show()
 }
 

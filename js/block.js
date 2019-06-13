@@ -1,16 +1,17 @@
 class Block {
-    constructor(name, x, y, w, h, color) {
+    constructor(x, y, w, h, mainBlock) {
         this.LEFT = 0
         this.RIGHT = 1
         this.UP = 2
         this.DOWN = 3
         this.HORIZONTAL = true
         this.VERTICAL = false
+        this.COLOR_MAIN = color(252, 97, 112)
+        this.COLOR_NORMAL = color(255, 215, 71)
 
-        this.name = name
         this.pos = createVector(x, y)
         this.size = createVector(w, h)
-        this.color = color
+        this.color = mainBlock ? this.COLOR_MAIN : this.COLOR_NORMAL
         this.mouseOffset = null
         this.moveLimits = null
         this.detectionFlag = null
@@ -26,18 +27,10 @@ class Block {
     }
 
     show() {
-        stroke(51)
+        stroke(0)
         strokeWeight(3)
         fill(this.color)
         rect(this.pos.x * game.SCALE,
-            this.pos.y * game.SCALE,
-            this.size.x * game.SCALE,
-            this.size.y * game.SCALE)
-        fill(51)
-        textSize(50)
-        textAlign(CENTER, CENTER)
-        text(this.name,
-            this.pos.x * game.SCALE + 8,
             this.pos.y * game.SCALE,
             this.size.x * game.SCALE,
             this.size.y * game.SCALE)
