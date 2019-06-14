@@ -56,24 +56,26 @@ class Block {
         }
     }
 
+    getMoveLimitPair(start, size, loopDir, orientation, indexCeil, indexFloor, dir, offset) {
+        this.getMoveLimit(start, size, loopDir, orientation, indexCeil, dir, offset)
+        if (indexCeil !== indexFloor) {
+            this.getMoveLimit(start, size, loopDir, orientation, indexFloor, dir, offset)
+        }
+    }
+
     getMoveLimits() {
         this.moveLimits = [0, Infinity, 0, Infinity]
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
-                const xCeil = ceil(this.pos.x + x)
-                const xFloor = floor(this.pos.x + x)
-                const xRound = round(this.pos.x + x)
-                const yCeil = ceil(this.pos.y + y)
-                const yFloor = floor(this.pos.y + y)
-                const yRound = round(this.pos.y + y)
-                this.getMoveLimit(xRound, game.GAME_W, -1, this.HORIZONTAL, yCeil, this.LEFT, 0)
-                this.getMoveLimit(xRound, game.GAME_W, -1, this.HORIZONTAL, yFloor, this.LEFT, 0)
-                this.getMoveLimit(xRound, game.GAME_W, 1, this.HORIZONTAL, yCeil, this.RIGHT, 1 - this.size.x)
-                this.getMoveLimit(xRound, game.GAME_W, 1, this.HORIZONTAL, yFloor, this.RIGHT, 1 - this.size.x)
-                this.getMoveLimit(yRound, game.GAME_H, -1, this.VERTICAL, xCeil, this.UP, 0)
-                this.getMoveLimit(yRound, game.GAME_H, -1, this.VERTICAL, xFloor, this.UP, 0)
-                this.getMoveLimit(yRound, game.GAME_H, 1, this.VERTICAL, xCeil, this.DOWN, 1 - this.size.y)
-                this.getMoveLimit(yRound, game.GAME_H, 1, this.VERTICAL, xFloor, this.DOWN, 1 - this.size.y)
+                const relativePos = createVector(this.pos.x + x, this.pos.y + y)
+                const ceilPos = createVector(ceil(relativePos.x), ceil(relativePos.y))
+                const floorPos = createVector(floor(relativePos.x), floor(relativePos.y))
+                const roundPos = createVector(round(relativePos.x), round(relativePos.y))
+
+                this.getMoveLimitPair(roundPos.x, game.GAME_W, -1, this.HORIZONTAL, ceilPos.y, floorPos.y, this.LEFT, 0)
+                this.getMoveLimitPair(roundPos.x, game.GAME_W, 1, this.HORIZONTAL, ceilPos.y, floorPos.y, this.RIGHT, 1 - this.size.x)
+                this.getMoveLimitPair(roundPos.y, game.GAME_H, -1, this.VERTICAL, ceilPos.x, floorPos.x, this.UP, 0)
+                this.getMoveLimitPair(roundPos.y, game.GAME_H, 1, this.VERTICAL, ceilPos.x, floorPos.x, this.DOWN, 1 - this.size.y)
             }
         }
     }
