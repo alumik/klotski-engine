@@ -1,4 +1,4 @@
-class Game {
+class Klotski {
     constructor() {
         this.SCALE = 100
         this.GAME_W = 4
@@ -6,7 +6,7 @@ class Game {
 
         this.blocks = null
         this.grid = []
-        this._block = null
+        this.currentBlock = null
     }
 
     init() {
@@ -15,9 +15,9 @@ class Game {
     }
 
     initGrid() {
-        for (let x = 0; x < this.GAME_W; x++) {
+        for (let x = 0; x < this.GAME_W; ++x) {
             const column = []
-            for (let y = 0; y < this.GAME_H; y++) {
+            for (let y = 0; y < this.GAME_H; ++y) {
                 column.push(false)
             }
             this.grid.push(column)
@@ -42,24 +42,25 @@ class Game {
     mousePressed() {
         for (let block of this.blocks) {
             if (block.contains(mouseX, mouseY)) {
-                this._block = block
+                this.currentBlock = block
+                break
             }
         }
-        if (this._block) {
-            this._block.mousePressed()
+        if (this.currentBlock) {
+            this.currentBlock.mousePressed()
         }
     }
 
     mouseDragged() {
-        if (this._block) {
-            this._block.mouseDragged()
+        if (this.currentBlock) {
+            this.currentBlock.mouseDragged()
         }
     }
 
     mouseReleased() {
-        if (this._block) {
-            this._block.mouseReleased()
-            this._block = null
+        if (this.currentBlock) {
+            this.currentBlock.mouseReleased()
+            this.currentBlock = null
         }
     }
 

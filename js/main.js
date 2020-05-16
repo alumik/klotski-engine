@@ -1,25 +1,24 @@
-let game
+let klotski
 
 function setup() {
     createCanvas(400, 500)
-
-    game = new Game()
-    game.init()
+    klotski = new Klotski()
+    klotski.init()
 }
 
 function draw() {
     background(38, 191, 191)
-    game.show()
+    klotski.show()
 }
 
 function mousePressed() {
-    game.mousePressed()
+    klotski.mousePressed()
 }
 
 function mouseDragged() {
-    game.mouseDragged()
+    klotski.mouseDragged()
 }
 
 function mouseReleased() {
-    game.mouseReleased()
+    klotski.mouseReleased()
 }
